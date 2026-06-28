@@ -1,0 +1,94 @@
+[alias]
+	st = status
+	ci = commit
+	co = checkout
+	cp = cherry-pick
+	put = push origin HEAD
+	fixup = !sh -c 'git commit -m \"fixup! $(git log -1 --format='\\''%s'\\'' $@)\"' -
+	squash = !sh -c 'git commit -m \"squash! $(git log -1 --format='\\''%s'\\'' $@)\"' -
+	doff = reset head^
+	ri = rebase --interactive
+	#br = branch
+	pruneremote = remote prune origin
+	tree = log --graph --oneline --decorate --color --all
+	tr = log --graph --oneline --decorate --color
+	unpushed = !"PROJ_BRANCH=$(git symbolic-ref HEAD | sed 's|refs/heads/||') && git log origin/$PROJ_BRANCH..HEAD"
+	unpulled = !"PROJ_BRANCH=$(git symbolic-ref HEAD | sed 's|refs/heads/||') && git fetch && git log HEAD..origin/$PROJ_BRANCH"
+	add-untracked = !"git status --porcelain | awk '/\\?\\?/{ print $2 }' | xargs git add"
+	ln = log --pretty=format:'%Cblue%h %Cred* %C(yellow)%s'
+	reset-authors = commit --amend --reset-author -CHEAD
+	rmbranch = "!f(){ git branch -d ${1} && git push origin --delete ${1}; };f"
+        snapshot = !git stash save "snapshot: $(date)" && git stash apply "stash@{0}"
+        # https://gist.github.com/Aupajo/d0f02dd24f2b460922561b5611bf8989
+        freshness = "!f() { git for-each-ref --sort=-committerdate refs/heads/ --format='%(HEAD) %(color:cyan)%(refname:short)%(color:reset) | %(committerdate:relative)%(color:reset) | %(subject)' | column -s '|' -t; }; f"
+        br = "!f() { git for-each-ref --sort=-committerdate refs/heads/ --format='%(HEAD) %(color:cyan)%(refname:short)%(color:reset) | %(committerdate:relative)%(color:reset) | %(subject)' | column -s '|' -t; }; f"
+	gone = ! git fetch -p && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D
+
+
+[branch]
+	autosetuprebase = always
+[color]
+	ui = auto
+[core]
+	excludesfile = /Users/craig.hawkes/.gitgnore_global
+        editor = vim
+	  # editor = mate  --wait
+	# editor = /usr/local/bin/sublime --wait
+	# editor = /usr/local/bin/subl --wait
+	# editor = mate -w
+	whitespace = warn
+[help]
+	autocorrect = 10
+# [include]
+# 	path = ~/.gitconfig.local
+[interactive]
+	singlekey = true
+[merge]
+	summary = true
+[merge "bundlelock"]
+	name = lock Gemfile
+	driver = bundle install
+[merge "bundle"]
+	name = bundle
+	driver = bundle
+#[merge "railsschema"]
+#	name = newer Rails schema version
+#	driver = "ruby -e '\n\
+#	default = tracking
+[rebase]
+	autosquash = true
+# [user]
+# 	name = craighawkes
+# 	email = craig.hawkes@gmail.com
+[github]
+  user = craig.hawkes@gmail.com
+  name = "craighawkes"
+  username = "craighawkes"
+[user]
+	email = craig.hawkes@gmail.com
+	name = "Craig "
+# [difftool "sourcetree"]
+# 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+# 	path =
+# [mergetool "sourcetree"]
+# 	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+# 	trustExitCode = true
+[filter "lfs"]
+	clean = git lfs clean %f
+	smudge = git lfs smudge %f
+	required = true
+[pull]
+	rebase = true
+[rerere]
+	enabled = true
+[init]
+	defaultBranch = main
+[push]
+	autoSetupRemote = true
+	useForceIfIncludes = true
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
